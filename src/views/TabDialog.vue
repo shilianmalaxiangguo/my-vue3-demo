@@ -223,6 +223,7 @@ const handleSearch = () => {
     这里的 flex: auto（即 flex: 1 1 auto）会考虑内容的实际大小
     如果改成 flex: 1（即 flex: 1 1 0%），由于 flex-basis: 0%，可能会导致内容被压缩，tabs 的布局会出问题 
     */
+    
   flex: auto;
   height: 0;
   display: flex;
