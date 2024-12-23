@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Tab from '../components/Tab.vue'
 import Flex from '../components/Flex.vue'
+import TabDialog from '../views/TabDialog.vue'
 
 const routes = [
   {
@@ -49,6 +50,11 @@ const routes = [
     path: '/table',
     name: 'Table',
     component: () => import('../views/Table.vue')
+  },
+  {
+    path: '/tab-dialog',
+    name: 'TabDialog',
+    component: TabDialog
   }
 ]
 

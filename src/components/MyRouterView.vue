@@ -32,6 +32,10 @@
           <el-icon><List /></el-icon>
           <span>表格示例</span>
         </el-menu-item>
+        <el-menu-item index="/tab-dialog">
+          <el-icon><Operation /></el-icon>
+          <span>Tab Dialog</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -71,7 +75,8 @@ import {
   Grid,
   Fold,
   List,
-  Connection
+  Connection,
+  Operation
 } from '@element-plus/icons-vue'
 
 defineOptions({

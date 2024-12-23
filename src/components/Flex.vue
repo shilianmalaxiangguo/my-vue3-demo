@@ -2,7 +2,7 @@
 <div class="flex w-full h-full">
   <div class="flex-grow bg-red-500">1</div>
   <div class="flex-grow bg-green-500 flex flex-col">
-    <div class="h-1/5 bg-pink-500">
+    <div class="shrink-0 bg-pink-500">
       1
     </div>
     <Scroll />
