@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Tab from '../components/Tab.vue'
 import Flex from '../components/Flex.vue'
 import TabDialog from '../views/TabDialog.vue'
+import PsqlDemo from '../views/PsqlDemo.vue'
 
 const routes = [
   {
@@ -55,6 +56,11 @@ const routes = [
     path: '/tab-dialog',
     name: 'TabDialog',
     component: TabDialog
+  },
+  {
+    path: '/psql-demo',
+    name: 'PsqlDemo',
+    component: PsqlDemo
   }
 ]
 

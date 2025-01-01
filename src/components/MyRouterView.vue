@@ -36,6 +36,10 @@
           <el-icon><Operation /></el-icon>
           <span>Tab Dialog</span>
         </el-menu-item>
+        <el-menu-item index="/psql-demo">
+          <el-icon><DataAnalysis /></el-icon>
+          <span>PSQL Demo</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -76,7 +80,8 @@ import {
   Fold,
   List,
   Connection,
-  Operation
+  Operation,
+  DataAnalysis
 } from '@element-plus/icons-vue'
 
 defineOptions({
