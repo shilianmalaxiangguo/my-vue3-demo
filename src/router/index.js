@@ -61,6 +61,11 @@ const routes = [
     path: '/psql-demo',
     name: 'PsqlDemo',
     component: PsqlDemo
+  },
+  {
+    path: '/json-editor',
+    name: 'JsonEditor',
+    component: () => import('../views/JsonEditor.vue')
   }
 ]
 

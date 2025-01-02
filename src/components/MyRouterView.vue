@@ -40,6 +40,10 @@
           <el-icon><DataAnalysis /></el-icon>
           <span>PSQL Demo</span>
         </el-menu-item>
+        <el-menu-item index="/json-editor">
+          <el-icon><Edit /></el-icon>
+          <span>JSON 编辑器</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -81,7 +85,8 @@ import {
   List,
   Connection,
   Operation,
-  DataAnalysis
+  DataAnalysis,
+  Edit
 } from '@element-plus/icons-vue'
 
 defineOptions({
