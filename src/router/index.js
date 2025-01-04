@@ -66,6 +66,11 @@ const routes = [
     path: '/json-editor',
     name: 'JsonEditor',
     component: () => import('../views/JsonEditor.vue')
+  },
+  {
+    path: '/audio-visualizer',
+    name: 'AudioVisualizer',
+    component: () => import('../components/AudioVisualizer.vue')
   }
 ]
 

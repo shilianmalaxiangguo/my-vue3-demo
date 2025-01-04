@@ -44,6 +44,10 @@
           <el-icon><Edit /></el-icon>
           <span>JSON 编辑器</span>
         </el-menu-item>
+        <el-menu-item index="/audio-visualizer">
+          <el-icon><Headset /></el-icon>
+          <span>音频可视化</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -86,7 +90,8 @@ import {
   Connection,
   Operation,
   DataAnalysis,
-  Edit
+  Edit,
+  Headset
 } from '@element-plus/icons-vue'
 
 defineOptions({
