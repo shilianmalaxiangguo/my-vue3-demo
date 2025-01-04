@@ -378,9 +378,6 @@ onBeforeUnmount(() => {
   if (state.audioContext) {
     state.audioContext.close()
   }
-  if (aplayer.value) {
-    aplayer.value.pause()
-  }
   window.removeEventListener('resize', resizeCanvas)
 })
 
@@ -501,57 +498,6 @@ const applyPreset = () => {
     }
   })
 }
-
-// 添加新的事件处理函数
-const handlePlay = async () => {
-  try {
-    if (!state.audioContext) {
-      // 等待 DOM 更新
-      await nextTick()
-      await initAudio()
-    }
-
-    // 确保音频上下文状态正确
-    if (state.audioContext?.state === 'suspended') {
-      await state.audioContext.resume()
-    }
-
-    if (aplayer.value) {
-      try {
-        // 直接使用 aplayer 的播放方法
-        await aplayer.value.play()
-        state.isPlaying = true
-      } catch (error) {
-        console.error('APlayer 播放失败:', error)
-        // 尝试直接控制音频元素
-        const audio = aplayer.value.$el.querySelector('audio')
-        if (audio) {
-          await audio.play()
-          state.isPlaying = true
-        }
-      }
-    }
-  } catch (error) {
-    console.error('播放失败:', error)
-    ElMessage.error('播放失败，请检查音频文件是否存在')
-  }
-}
-
-const handlePause = () => {
-  try {
-    if (aplayer.value) {
-      aplayer.value.pause()
-    }
-    state.isPlaying = false
-  } catch (error) {
-    console.error('暂停失败:', error)
-  }
-}
-
-const handleTimeUpdate = (currentTime) => {
-  state.currentTime = currentTime
-  // 如果需要，可以在这里更新其他状态
-}
 </script>
 
 <style scoped>
@@ -625,22 +571,5 @@ const handleTimeUpdate = (currentTime) => {
 .eq-container {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-}
-
-/* 添加 APlayer 自定义样式 */
-:deep(.aplayer) {
-  background: transparent;
-}
-
-:deep(.aplayer .aplayer-pic) {
-  background-color: #8B5CF6;
-}
-
-:deep(.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played) {
-  background: #8B5CF6 !important;
-}
-
-:deep(.aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb) {
-  background: #8B5CF6 !important;
 }
 </style> 
