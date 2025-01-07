@@ -48,6 +48,10 @@
           <el-icon><Headset /></el-icon>
           <span>音频可视化</span>
         </el-menu-item>
+        <el-menu-item index="/dropdown-demo">
+          <el-icon><OfficeBuilding /></el-icon>
+          <span>下拉菜单示例</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -91,14 +95,74 @@ import {
   Operation,
   DataAnalysis,
   Edit,
-  Headset
+  Headset,
+  OfficeBuilding
 } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
 
 defineOptions({
   name: 'MyRouterView'
 })
 
 const route = useRoute()
+
+// 模拟接口数据
+const mockOrganizations = [
+  { id: 1, name: '总公司' },
+  { id: 2, name: '北京分公司' },
+  { id: 3, name: '上海分公司' },
+  { id: 4, name: '广州分公司' },
+  { id: 5, name: '深圳分公司' }
+]
+
+// 状态管理
+const organizations = ref([])
+const loading = ref(true)
+const selectedOrg = ref('')
+const currentOrg = ref('')
+
+// 模拟 API 调用
+const fetchOrganizations = () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockOrganizations)
+    }, 3000)
+  })
+}
+
+// 初始化数据
+onMounted(async () => {
+  try {
+    const data = await fetchOrganizations()
+    organizations.value = data
+    selectedOrg.value = data[0].id
+    currentOrg.value = data[0].name
+    loading.value = false
+  } catch (error) {
+    console.error('获取机构列表失败:', error)
+  }
+})
+
+// 处理命令模式选择
+const handleCommand = (command) => {
+  const org = organizations.value.find(org => org.id === command)
+  if (org) {
+    currentOrg.value = org.name
+  }
+}
+
+// 处理点击模式选择
+const handleClick = (org) => {
+  currentOrg.value = org.name
+}
+
+// 处理 Select 选择
+const handleSelect = (value) => {
+  const org = organizations.value.find(org => org.id === value)
+  if (org) {
+    currentOrg.value = org.name
+  }
+}
 </script>
 
 <style lang="scss" scoped>

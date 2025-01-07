@@ -71,6 +71,11 @@ const routes = [
     path: '/audio-visualizer',
     name: 'AudioVisualizer',
     component: () => import('../components/AudioVisualizer.vue')
+  },
+  {
+    path: '/dropdown-demo',
+    name: 'DropdownDemo',
+    component: () => import('../views/DropdownDemo.vue')
   }
 ]
 
