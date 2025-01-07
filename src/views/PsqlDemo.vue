@@ -54,8 +54,8 @@
           <template #default="{ row }">
             <el-switch
               v-model="row.status"
-              :active-value="0"
-              :inactive-value="1"
+              :active-value="1"
+              :inactive-value="0"
               :loading="row.statusLoading"
               @change="(val) => handleStatusChange(row, val)"
               active-text="已激活"
@@ -186,7 +186,7 @@ const defaultForm = {
   name: '',
   email: '',
   gender: 2,
-  status: 1
+  status: 0
 }
 
 // 表单校验规则
@@ -208,7 +208,6 @@ const state = reactive({
   searchText: '',
   dialogVisible: false,
   editForm: { ...defaultForm },
-  formRef: null,
   statusDialogVisible: false,
   selectedUser: null
 })
@@ -248,17 +247,27 @@ const handleEdit = (row) => {
   state.dialogVisible = true
 }
 
+const formRef = ref(null)
+
 const handleSave = async () => {
-  if (!state.formRef) return
+  if (!formRef.value) return
   
   try {
-    await state.formRef.validate()
-    const { id, ...data } = state.editForm
+    // 等待表单验证
+    await formRef.value.validate()
+    
+    // 解构表单数据，只保留需要的字段
+    const { id, name, email, gender, status } = state.editForm
+    const data = { name, email, gender, status }
+    
+    console.log('Saving user:', { id, data }) // 添加日志
     
     if (id) {
+      // 编辑现有用户
       await userApi.updateUser(id, data)
       ElMessage.success('更新成功')
     } else {
+      // 创建新用户
       await userApi.createUser(data)
       ElMessage.success('创建成功')
     }
@@ -267,6 +276,15 @@ const handleSave = async () => {
     fetchUsers()
   } catch (error) {
     console.error('保存失败:', error)
+    if (error.response?.data?.message) {
+      // 如果是数组，将所有错误信息连接起来
+      const errorMessage = Array.isArray(error.response.data.message) 
+        ? error.response.data.message.join('; ')
+        : error.response.data.message
+      ElMessage.error(errorMessage)
+    } else if (error.message) {
+      ElMessage.error(error.message)
+    }
   }
 }
 
@@ -296,15 +314,23 @@ const handleDelete = async (row) => {
   }
 }
 
+// 修改用户状态枚举的值
+const UserStatusEnum = {
+  Activated: 1,    // 1 表示激活状态
+  Inactivated: 0   // 0 表示停用状态
+}
+
+// 修改状态处理函数
 const handleStatusChange = async (row, value) => {
   try {
+    const isActivating = value === UserStatusEnum.Activated  // 1 表示激活
     await ElMessageBox.confirm(
-      `确定要${value === 0 ? '激活' : '禁用'}用户 "${row.name}" 吗？`,
+      `确定要${isActivating ? '激活' : '禁用'}用户 "${row.name}" 吗？`,
       '提示',
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: value === 0 ? 'success' : 'warning',
+        type: isActivating ? 'success' : 'warning',
         customClass: 'status-confirm-dialog',
         draggable: false,
         center: true,
@@ -313,7 +339,7 @@ const handleStatusChange = async (row, value) => {
     )
 
     row.statusLoading = true
-    if (value === 0) {
+    if (isActivating) {
       await userApi.activateUser(row.id)
       ElMessage.success('用户已激活')
     } else {
@@ -322,7 +348,7 @@ const handleStatusChange = async (row, value) => {
     }
     await fetchUsers()
   } catch (error) {
-    row.status = value === 0 ? 1 : 0
+    row.status = value === UserStatusEnum.Activated ? UserStatusEnum.Inactivated : UserStatusEnum.Activated
     if (error !== 'cancel') {
       console.error('状态修改失败:', error)
     }

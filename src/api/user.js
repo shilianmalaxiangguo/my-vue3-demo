@@ -13,7 +13,7 @@ export const userApi = {
 
   // 更新用户
   updateUser(id, data) {
-    return request.put(`/users/${id}`, data)
+    return request.patch(`/users/${id}`, data)
   },
 
   // 删除用户
@@ -23,11 +23,11 @@ export const userApi = {
 
   // 激活用户
   activateUser(id) {
-    return request.put(`/users/${id}/activate`)
+    return request.patch(`/users/${id}/activate`)
   },
 
   // 禁用用户
   deactivateUser(id) {
-    return request.put(`/users/${id}/deactivate`)
+    return request.patch(`/users/${id}/deactivate`)
   }
 } 

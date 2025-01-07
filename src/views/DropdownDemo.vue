@@ -16,10 +16,10 @@
           trigger="click"
           @command="handleCommand"
         >
-          <el-button type="primary">
+          <span class="flex items-center cursor-pointer text-primary hover:text-primary-light">
             {{ currentOrg || '请选择机构' }}
-            <el-icon class="el-icon--right"><ArrowDown /></el-icon>
-          </el-button>
+            <el-icon class="ml-1"><ArrowDown /></el-icon>
+          </span>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item 
@@ -41,10 +41,10 @@
           v-loading="loading"
           trigger="click"
         >
-          <el-button type="primary">
+          <span class="flex items-center cursor-pointer text-primary hover:text-primary-light">
             {{ currentOrg || '请选择机构' }}
-            <el-icon class="el-icon--right"><ArrowDown /></el-icon>
-          </el-button>
+            <el-icon class="ml-1"><ArrowDown /></el-icon>
+          </span>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item 
@@ -87,11 +87,11 @@ import { OfficeBuilding, ArrowDown } from '@element-plus/icons-vue'
 
 // 模拟接口数据
 const mockOrganizations = [
-  { id: 1, name: '总公司' },
-  { id: 2, name: '北京分公司' },
-  { id: 3, name: '上海分公司' },
-  { id: 4, name: '广州分公司' },
-  { id: 5, name: '深圳分公司' }
+  { id: 1, name: '新疆乌鲁木齐米东医院' },
+  { id: 2, name: '伊宁县人民医院' },
+  { id: 3, name: '伊宁县妇幼保健院' },
+  { id: 4, name: '伊宁县中医医院' },
+  { id: 5, name: '彭州人民医院' }
 ]
 
 // 状态管理
@@ -99,13 +99,27 @@ const organizations = ref([])
 const loading = ref(true)
 const selectedOrg = ref('')
 const currentOrg = ref('')
+const detailLoading = ref(false)
 
 // 模拟 API 调用
 const fetchOrganizations = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockOrganizations)
-    }, 3000)
+    },500)
+  })
+}
+
+// 添加模拟的接口请求方法
+const fetchOrgDetail = async (orgId) => {
+  console.log('正在请求机构详情...')
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        id: orgId,
+        detail: `这是机构 ${orgId} 的详细信息`
+      })
+    }, 1000)
   })
 }
 
@@ -123,10 +137,19 @@ onMounted(async () => {
 })
 
 // 处理命令模式选择
-const handleCommand = (command) => {
+const handleCommand = async (command) => {
   const org = organizations.value.find(org => org.id === command)
   if (org) {
     currentOrg.value = org.name
+    detailLoading.value = true
+    try {
+      const detail = await fetchOrgDetail(command)
+      console.log('获取到的机构详情:', detail)
+    } catch (error) {
+      console.error('获取机构详情失败:', error)
+    } finally {
+      detailLoading.value = false
+    }
   }
 }
 
@@ -136,10 +159,20 @@ const handleClick = (org) => {
 }
 
 // 处理 Select 选择
-const handleSelect = (value) => {
+const handleSelect = async (value) => {
   const org = organizations.value.find(org => org.id === value)
   if (org) {
     currentOrg.value = org.name
+    // 如果需要请求详情
+    detailLoading.value = true
+    try {
+      const detail = await fetchOrgDetail(value)
+      console.log('获取到的机构详情:', detail)
+    } catch (error) {
+      console.error('获取机构详情失败:', error)
+    } finally {
+      detailLoading.value = false
+    }
   }
 }
 </script> 

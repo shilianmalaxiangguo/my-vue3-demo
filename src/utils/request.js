@@ -3,15 +3,16 @@ import { ElMessage } from 'element-plus'
 
 // 定义结果码枚举
 export const ResultCodeEnum = {
-  Success: 200,           // 成功
-  BadRequest: 400,      // 请求错误
-  NotFound: 404,        // 未找到
-  Conflict: 409,        // 冲突
-  ServerError: 500      // 服务器错误
+  Success: 200,        // 成功
+  Created: 201,        // 创建成功
+  BadRequest: 400,     // 请求错误
+  NotFound: 404,       // 未找到
+  Conflict: 409,       // 冲突
+  ServerError: 500     // 服务器错误
 }
 
 const request = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:5000',
   timeout: 5000
 })
 
@@ -32,7 +33,7 @@ request.interceptors.response.use(
     const res = response.data
     console.log(res)
     // 判断业务状态码
-    if (res.code === ResultCodeEnum.Success) {
+    if (res.code === ResultCodeEnum.Success || res.code === ResultCodeEnum.Created) {
       return res.data
     } else {
       // 业务错误处理
