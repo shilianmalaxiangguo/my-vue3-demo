@@ -31,10 +31,6 @@ export default defineConfig({
         }
       }
     },
-    sourcemap: true,
-  },
-  worker: {
-    format: 'es',
-    plugins: []
+    sourcemap: true
   }
 })

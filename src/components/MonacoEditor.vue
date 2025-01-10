@@ -25,70 +25,31 @@ const emit = defineEmits(['update:modelValue'])
 let editor = null
 
 onMounted(() => {
-  // 为每个编辑器创建独立的 model
-  const uri = monaco.Uri.parse(`file:///workspace/${props.editorId}.${props.language}`)
-  
-  // 如果已存在相同 URI 的 model，先销毁它
-  const existingModel = monaco.editor.getModel(uri)
-  if (existingModel) {
-    existingModel.dispose()
-  }
-
-  // 创建新的 model
-  const model = monaco.editor.createModel(props.modelValue, props.language, uri)
-
-  // 如果是 TypeScript，为每个编辑器创建独立的语言服务实例
-  if (props.language === 'typescript') {
-    // 创建独立的 TypeScript Worker
-    const workerFactory = () => {
-      const worker = monaco.editor.createWebWorker({
-        moduleId: 'vs/language/typescript/tsWorker',
-        label: `typescript-${props.editorId}`,
-        keepIdleModels: true,
-      })
-      
-      // 为这个 worker 配置独立的编译器选项
-      worker.withSyncedResources([model.uri])
-      return worker
-    }
-
-    // 注册独立的 TypeScript Worker
-    monaco.languages.typescript.getTypeScriptWorker = () => workerFactory()
-    monaco.languages.typescript.getJavaScriptWorker = () => workerFactory()
-
-    // 为这个实例配置 TypeScript 编译器选项
-    monaco.languages.typescript.typescriptDefaults.setWorkerOptions({
-      customWorkerPath: undefined
-    })
-
-    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.ES2020,
-      allowNonTsExtensions: true,
-      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.typescript.ModuleKind.CommonJS,
-      noEmit: true,
-      esModuleInterop: true,
-      jsx: monaco.languages.typescript.JsxEmit.React,
-      reactNamespace: "React",
-      allowJs: true,
-      typeRoots: ["node_modules/@types"]
-    })
-  }
-
+  // 创建编辑器实例
   editor = monaco.editor.create(document.getElementById(props.editorId), {
-    model: model,
+    value: props.modelValue,
+    language: props.language,
     automaticLayout: true,
     theme: 'vs',
     minimap: {
       enabled: false
-    }
+    },
+    scrollBeyondLastLine: false
   })
 
+  // 监听内容变化
   editor.onDidChangeModelContent(() => {
     emit('update:modelValue', editor.getValue())
   })
 })
 
+onBeforeUnmount(() => {
+  if (editor) {
+    editor.dispose()
+  }
+})
+
+// 监听值变化
 watch(
   () => props.modelValue,
   (newValue) => {
@@ -98,6 +59,7 @@ watch(
   }
 )
 
+// 监听语言变化
 watch(
   () => props.language,
   (newValue) => {
@@ -106,13 +68,6 @@ watch(
     }
   }
 )
-
-onBeforeUnmount(() => {
-  if (editor) {
-    editor.getModel()?.dispose()
-    editor.dispose()
-  }
-})
 </script>
 
 <style scoped>

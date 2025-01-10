@@ -13,7 +13,14 @@
               @change="handleLanguageChange"
             >
               <el-option 
-                v-for="lang in ['javascript', 'typescript', 'python', 'java', 'html', 'vue']" 
+                v-for="lang in [
+                  'typescript',
+                  'javascript',
+                  'python',
+                  'java',
+                  'html',
+                  'vue'
+                ]" 
                 :key="lang" 
                 :label="lang.charAt(0).toUpperCase() + lang.slice(1)" 
                 :value="lang" 
@@ -89,7 +96,7 @@ const languageMap = {
   vue: 'xml'
 }
 
-const language = ref('javascript')
+const language = ref('typescript')
 const outputFormat = ref('line-by-line')
 const oldCode = ref('')
 const newCode = ref('')
@@ -100,40 +107,14 @@ const examples = {
     new: 'function example() {\n  console.log("新代码");\n  return false;\n}'
   },
   typescript: {
-    old: `// @ts-check
-
-interface Person {
-  name: string;
-  age: number;
-}
-
-function greet(person: Person): void {
-  console.log(\`旧代码: Hello, \${person.name}!\`);
-}
-
-const oldUser: Person = {
-  name: "Johnson",
-  age: 30
-};
-
-greet(oldUser);`,
-    new: `// @ts-check
-
-interface Person {
-  name: string;
-  age: number;
-}
-
-function greet(person: Person): void {
-  console.log(\`新代码: Hello, \${person.name}!\`);
-}
-
-const oldUser: Person = {
-  name: "John",
-  age: 30
-};
-
-greet(oldUser);`
+    old: `function fo(user: User): string {
+  return "用户 " + user.name;
+}`,
+    new: `function Info(user: User): string {
+  const status = user.active ? "在线" : "离线";
+  const type = user.type === "admin" ? "管理员" : "普通用户";
+  return type;
+}`
   },
   python: {
     old: 'def example():\n    print("旧代码")\n    return True',
@@ -177,7 +158,9 @@ const diffLanguage = computed(() => {
 
 onMounted(async () => {
   await nextTick()
-  await handleLanguageChange('javascript')
+  language.value = 'typescript'
+  oldCode.value = examples.typescript.old
+  newCode.value = examples.typescript.new
 })
 </script>
 
