@@ -17,7 +17,23 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+  worker: {
+    format: 'es',
+    plugins: []
+  },
+  optimizeDeps: {
+    exclude: ['monaco-editor']
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'monaco-editor': ['monaco-editor']
+        }
+      }
     }
   }
 })

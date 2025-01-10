@@ -3,6 +3,7 @@ import Tab from '../components/Tab.vue'
 import Flex from '../components/Flex.vue'
 import TabDialog from '../views/TabDialog.vue'
 import PsqlDemo from '../views/PsqlDemo.vue'
+import CodeDiff from '../views/CodeDiff.vue'
 
 const routes = [
   {
@@ -76,6 +77,11 @@ const routes = [
     path: '/dropdown-demo',
     name: 'DropdownDemo',
     component: () => import('../views/DropdownDemo.vue')
+  },
+  {
+    path: '/code-diff',
+    name: 'CodeDiff',
+    component: CodeDiff
   }
 ]
 

@@ -57,12 +57,24 @@ import { ElMessage } from 'element-plus'
 import { Tools, FullScreen } from '@element-plus/icons-vue'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
+import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 
 // 配置 Monaco Editor 的 worker
 self.MonacoEnvironment = {
   getWorker(_, label) {
     if (label === 'json') {
       return new jsonWorker()
+    }
+    if (label === 'css' || label === 'scss' || label === 'less') {
+      return new cssWorker()
+    }
+    if (label === 'html' || label === 'handlebars' || label === 'razor') {
+      return new htmlWorker()
+    }
+    if (label === 'typescript' || label === 'javascript') {
+      return new tsWorker()
     }
     return new editorWorker()
   }
@@ -72,6 +84,10 @@ const props = defineProps({
   modelValue: {
     type: String,
     required: true
+  },
+  language: {
+    type: String,
+    default: 'json'
   }
 })
 
@@ -81,23 +97,32 @@ const fullscreenEditorContainer = shallowRef(null)
 const editor = shallowRef(null)
 const isFullscreen = ref(false)
 let contentChangeTimeout = null
+let editorModel = null
 
 // 创建编辑器实例
 const initMonaco = async (container) => {
   if (!container) return
 
-  // 确保先销毁旧的编辑器实例
+  // 确保先销毁旧的编辑器实例和模型
   if (editor.value) {
     editor.value.dispose()
+  }
+  if (editorModel) {
+    editorModel.dispose()
   }
 
   // 等待 DOM 更新完成
   await nextTick()
 
+  // 创建新的模型
+  editorModel = monaco.editor.createModel(
+    props.modelValue || '',
+    props.language
+  )
+
   // 创建编辑器
   editor.value = monaco.editor.create(container, {
-    value: props.modelValue || '',
-    language: 'json',
+    model: editorModel,
     theme: 'vs',
     minimap: { enabled: false },
     fontSize: 14,
@@ -118,16 +143,21 @@ const initMonaco = async (container) => {
   })
 
   // 内容变化处理
-  editor.value.onDidChangeModelContent(() => {
+  const disposable = editorModel.onDidChangeContent(() => {
     if (contentChangeTimeout) {
       clearTimeout(contentChangeTimeout)
     }
     contentChangeTimeout = setTimeout(() => {
-      const value = editor.value?.getValue()
+      const value = editorModel.getValue()
       if (value !== undefined && value !== props.modelValue) {
         emit('update:modelValue', value)
       }
     }, 300)
+  })
+
+  // 在组件销毁时清理
+  onBeforeUnmount(() => {
+    disposable.dispose()
   })
 }
 
@@ -178,6 +208,13 @@ watch(isFullscreen, () => {
   })
 })
 
+// 监听 language 变化
+watch(() => props.language, (newLang) => {
+  if (editorModel) {
+    monaco.editor.setModelLanguage(editorModel, newLang)
+  }
+})
+
 onMounted(() => {
   // 初始化非全屏编辑器
   setTimeout(() => {
@@ -186,15 +223,18 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  // 确保在组件销毁时清理
-  document.body.classList.remove('fullscreen-mode')
-  document.body.style.overflow = ''
+  // 清理所有资源
   if (contentChangeTimeout) {
     clearTimeout(contentChangeTimeout)
   }
   if (editor.value) {
     editor.value.dispose()
   }
+  if (editorModel) {
+    editorModel.dispose()
+  }
+  // 清理 monaco 实例
+  monaco.editor.getModels().forEach(model => model.dispose())
 })
 </script>
 

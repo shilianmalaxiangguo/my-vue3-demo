@@ -72,6 +72,10 @@
           <el-icon><OfficeBuilding /></el-icon>
           <span>下拉菜单示例</span>
         </el-menu-item>
+        <el-menu-item index="/code-diff">
+          <el-icon><Document /></el-icon>
+          <span>代码对比</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -124,7 +128,8 @@ import {
   OfficeBuilding,
   Moon,
   Sunny,
-  Expand
+  Expand,
+  Document
 } from '@element-plus/icons-vue'
 import { useSidebar } from '../store/sidebarStore'
 
