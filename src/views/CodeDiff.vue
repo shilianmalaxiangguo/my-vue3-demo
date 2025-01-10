@@ -9,15 +9,15 @@
               v-model="language" 
               placeholder="选择语言" 
               style="width: 150px; margin-right: 10px"
+              :value="language"
               @change="handleLanguageChange"
             >
-              <el-option label="JavaScript" value="javascript" />
-              <el-option label="TypeScript" value="typescript" />
-              <el-option label="Python" value="python" />
-              <el-option label="Java" value="java" />
-              <el-option label="HTML" value="html" />
-              <el-option label="CSS" value="css" />
-              <el-option label="Vue" value="vue" />
+              <el-option 
+                v-for="lang in ['javascript', 'typescript', 'python', 'java', 'html', 'vue']" 
+                :key="lang" 
+                :label="lang.charAt(0).toUpperCase() + lang.slice(1)" 
+                :value="lang" 
+              />
             </el-select>
             <el-select 
               v-model="outputFormat" 
@@ -99,26 +99,6 @@ const examples = {
     old: 'function example() {\n  console.log("旧代码");\n  return true;\n}',
     new: 'function example() {\n  console.log("新代码");\n  return false;\n}'
   },
-  python: {
-    old: 'def example():\n    print("旧代码")\n    return True',
-    new: 'def example():\n    print("新代码")\n    return False'
-  },
-  java: {
-    old: 'public class Example {\n    public void test() {\n        System.out.println("旧代码");\n    }\n}',
-    new: 'public class Example {\n    public void test() {\n        System.out.println("新代码");\n    }\n}'
-  },
-  html: {
-    old: '<div class="old">\n    <h1>旧标题</h1>\n</div>',
-    new: '<div class="new">\n    <h1>新标题</h1>\n</div>'
-  },
-  css: {
-    old: '.example {\n    color: red;\n    font-size: 14px;\n}',
-    new: '.example {\n    color: blue;\n    font-size: 16px;\n}'
-  },
-  vue: {
-    old: '<template>\n  <div>旧组件</div>\n</template>',
-    new: '<template>\n  <div>新组件</div>\n</template>'
-  },
   typescript: {
     old: `// @ts-check
 
@@ -153,7 +133,23 @@ const oldUser: Person = {
   age: 30
 };
 
-greet(oldUser);`,
+greet(oldUser);`
+  },
+  python: {
+    old: 'def example():\n    print("旧代码")\n    return True',
+    new: 'def example():\n    print("新代码")\n    return False'
+  },
+  java: {
+    old: 'public class Example {\n    public void test() {\n        System.out.println("旧代码");\n    }\n}',
+    new: 'public class Example {\n    public void test() {\n        System.out.println("新代码");\n    }\n}'
+  },
+  html: {
+    old: '<div class="old">\n    <h1>旧标题</h1>\n</div>',
+    new: '<div class="new">\n    <h1>新标题</h1>\n</div>'
+  },
+  vue: {
+    old: '<template>\n  <div>旧组件</div>\n</template>',
+    new: '<template>\n  <div>新组件</div>\n</template>'
   }
 }
 
@@ -167,12 +163,11 @@ const updateNewCode = (value) => {
 
 const handleLanguageChange = async (newLang) => {
   if (examples[newLang]) {
-    language.value = newLang
+    oldCode.value = examples[newLang].old
+    newCode.value = examples[newLang].new
+    
     await nextTick()
-    setTimeout(() => {
-      oldCode.value = examples[newLang].old
-      newCode.value = examples[newLang].new
-    }, 0)
+    language.value = newLang
   }
 }
 
@@ -189,10 +184,13 @@ onMounted(async () => {
 <style scoped>
 .container {
   padding: 20px;
+  max-width: 95%;
+  margin: 0 auto;
 }
 
 .diff-card {
   margin: 0 auto;
+  width: 100%;
 }
 
 .card-header {
@@ -235,6 +233,7 @@ onMounted(async () => {
 .editor {
   width: 100%;
   height: 100%;
+  min-width: 500px;
 }
 
 .diff-container {
@@ -251,5 +250,10 @@ onMounted(async () => {
   border-radius: 4px;
   overflow: auto;
   background: #fff;
+  min-width: 100%;
+}
+
+:deep(.monaco-editor .scrollbar.horizontal) {
+  height: 12px !important;
 }
 </style> 
