@@ -87,11 +87,11 @@ import { OfficeBuilding, ArrowDown } from '@element-plus/icons-vue'
 
 // 模拟接口数据
 const mockOrganizations = [
-  { id: 1, name: '新疆乌鲁木齐米东医院' },
-  { id: 2, name: '伊宁县人民医院' },
-  { id: 3, name: '伊宁县妇幼保健院' },
-  { id: 4, name: '伊宁县中医医院' },
-  { id: 5, name: '彭州人民医院' }
+  { id: 1, name: '模拟医院1' },
+  { id: 2, name: '模拟医院2' },
+  { id: 3, name: '模拟医院3' },
+  { id: 4, name: '模拟医院4' },
+  { id: 5, name: '模拟医院5' }
 ]
 
 // 状态管理
