@@ -132,7 +132,7 @@ function greet(person: Person): void {
 }
 
 const oldUser: Person = {
-  name: "John",
+  name: "Johnson",
   age: 30
 };
 
@@ -142,23 +142,18 @@ greet(oldUser);`,
 interface Person {
   name: string;
   age: number;
-  email?: string;  // 可选属性
 }
 
 function greet(person: Person): void {
   console.log(\`新代码: Hello, \${person.name}!\`);
-  if (person.email) {
-    console.log(\`Email: \${person.email}\`);
-  }
 }
 
-const newUser: Person = {
+const oldUser: Person = {
   name: "John",
-  age: 30,
-  email: "john@example.com"
+  age: 30
 };
 
-greet(newUser);`
+greet(oldUser);`,
   }
 }
 
