@@ -12,6 +12,7 @@
               @change="handleLanguageChange"
             >
               <el-option label="JavaScript" value="javascript" />
+              <el-option label="TypeScript" value="typescript" />
               <el-option label="Python" value="python" />
               <el-option label="Java" value="java" />
               <el-option label="HTML" value="html" />
@@ -33,25 +34,29 @@
       <div class="editor-container">
         <div class="code-input">
           <h3>旧代码</h3>
-          <el-input
-            v-model="oldCode"
-            type="textarea"
-            :rows="12"
-            resize="none"
-            :spellcheck="false"
-            class="code-textarea"
-          />
+          <div class="editor-wrapper">
+            <monaco-editor
+              v-model="oldCode"
+              :language="language"
+              class="editor"
+              :key="`old-${language}`"
+              editor-id="old-editor"
+              @update:modelValue="updateOldCode"
+            />
+          </div>
         </div>
         <div class="code-input">
           <h3>新代码</h3>
-          <el-input
-            v-model="newCode"
-            type="textarea"
-            :rows="12"
-            resize="none"
-            :spellcheck="false"
-            class="code-textarea"
-          />
+          <div class="editor-wrapper">
+            <monaco-editor
+              v-model="newCode"
+              :language="language"
+              class="editor"
+              :key="`new-${language}`"
+              editor-id="new-editor"
+              @update:modelValue="updateNewCode"
+            />
+          </div>
         </div>
       </div>
 
@@ -60,7 +65,7 @@
         <code-diff
           :old-string="oldCode"
           :new-string="newCode"
-          :language="language"
+          :language="diffLanguage"
           :output-format="outputFormat"
           :show-line-numbers="true"
           highlight-line
@@ -71,10 +76,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
+import MonacoEditor from '../components/MonacoEditor.vue'
+
+const languageMap = {
+  javascript: 'javascript',
+  typescript: 'javascript',
+  python: 'python',
+  java: 'java',
+  html: 'xml',
+  css: 'css',
+  vue: 'xml'
+}
 
 const language = ref('javascript')
 const outputFormat = ref('line-by-line')
+const oldCode = ref('')
+const newCode = ref('')
 
 const examples = {
   javascript: {
@@ -100,21 +118,76 @@ const examples = {
   vue: {
     old: '<template>\n  <div>旧组件</div>\n</template>',
     new: '<template>\n  <div>新组件</div>\n</template>'
+  },
+  typescript: {
+    old: `// @ts-check
+
+interface Person {
+  name: string;
+  age: number;
+}
+
+function greet(person: Person): void {
+  console.log(\`旧代码: Hello, \${person.name}!\`);
+}
+
+const oldUser: Person = {
+  name: "John",
+  age: 30
+};
+
+greet(oldUser);`,
+    new: `// @ts-check
+
+interface Person {
+  name: string;
+  age: number;
+  email?: string;  // 可选属性
+}
+
+function greet(person: Person): void {
+  console.log(\`新代码: Hello, \${person.name}!\`);
+  if (person.email) {
+    console.log(\`Email: \${person.email}\`);
   }
 }
 
-const oldCode = ref(examples.javascript.old)
-const newCode = ref(examples.javascript.new)
+const newUser: Person = {
+  name: "John",
+  age: 30,
+  email: "john@example.com"
+};
 
-const handleLanguageChange = (newLang) => {
+greet(newUser);`
+  }
+}
+
+const updateOldCode = (value) => {
+  oldCode.value = value
+}
+
+const updateNewCode = (value) => {
+  newCode.value = value
+}
+
+const handleLanguageChange = async (newLang) => {
   if (examples[newLang]) {
-    oldCode.value = examples[newLang].old
-    newCode.value = examples[newLang].new
+    language.value = newLang
+    await nextTick()
+    setTimeout(() => {
+      oldCode.value = examples[newLang].old
+      newCode.value = examples[newLang].new
+    }, 0)
   }
 }
 
-onMounted(() => {
-  handleLanguageChange(language.value)
+const diffLanguage = computed(() => {
+  return languageMap[language.value] || 'javascript'
+})
+
+onMounted(async () => {
+  await nextTick()
+  await handleLanguageChange('javascript')
 })
 </script>
 
@@ -125,7 +198,6 @@ onMounted(() => {
 
 .diff-card {
   margin: 0 auto;
-  max-width: 1200px;
 }
 
 .card-header {
@@ -148,6 +220,8 @@ onMounted(() => {
 
 .code-input {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .code-input h3 {
@@ -155,16 +229,17 @@ onMounted(() => {
   color: #606266;
 }
 
-.code-textarea {
-  font-family: monospace;
-  font-size: 14px;
-  line-height: 1.5;
+.editor-wrapper {
+  flex: 1;
+  min-height: 300px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-:deep(.el-textarea__inner) {
-  font-family: monospace !important;
-  font-size: 14px !important;
-  line-height: 1.5 !important;
+.editor {
+  width: 100%;
+  height: 100%;
 }
 
 .diff-container {

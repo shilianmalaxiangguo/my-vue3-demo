@@ -20,12 +20,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  worker: {
-    format: 'es',
-    plugins: []
-  },
   optimizeDeps: {
-    exclude: ['monaco-editor']
+    include: ['monaco-editor']
   },
   build: {
     rollupOptions: {
@@ -34,6 +30,11 @@ export default defineConfig({
           'monaco-editor': ['monaco-editor']
         }
       }
-    }
+    },
+    sourcemap: true,
+  },
+  worker: {
+    format: 'es',
+    plugins: []
   }
 })
